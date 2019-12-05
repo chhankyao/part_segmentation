@@ -52,7 +52,6 @@ if __name__ == "__main__":
 
     viz = Visualizer(opt.exp_name)
     device = torch.device("cuda:"+str(opt.gpu) if torch.cuda.is_available() else "cpu")
-    print('hi')
 
 
     # ================= Prepare training data ==================
