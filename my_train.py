@@ -25,7 +25,7 @@ def get_feat_target(self, input, output):
 if __name__ == "__main__":
 
     parser = argparse.ArgumentParser()
-    parser.add_argument("--exp_name", type=str, default='all', help="experiment name")
+    parser.add_argument("--exp_name", type=str, default='wo_cls', help="experiment name")
     parser.add_argument("--n_epochs", type=int, default=300, help="number of epochs")
     parser.add_argument("--batch_size", type=int, default=8, help="size of each image batch")
     parser.add_argument("--n_cpu", type=int, default=8, help="number of cpu threads for batch generation")
@@ -34,7 +34,7 @@ if __name__ == "__main__":
     parser.add_argument("--feat_size", type=int, default=100, help="size of each feat dimension")
     parser.add_argument("--k", type=int, default=2, help="number of parts per class")
     parser.add_argument("--n_classes", type=int, default=2, help="number of classes")
-    parser.add_argument("--w_cls", type=float, default=1e2, help="classification loss weight")
+    parser.add_argument("--w_cls", type=float, default=0, help="classification loss weight")
     parser.add_argument("--w_sem", type=float, default=1e4, help="classification loss weight")
     parser.add_argument("--w_ort", type=float, default=0, help="classification loss weight")
     parser.add_argument("--w_geo", type=float, default=1e2, help="classification loss weight")
@@ -294,8 +294,8 @@ if __name__ == "__main__":
                   epoch_loss_cls, epoch_loss_geo, epoch_loss_sem, epoch_loss_ort, epoch_loss_eqv))
 
         if (epoch+1) % opt.checkpoint_interval == 0:
-            model_saved = '../models/model_{}_epoch_{}.pt'.format(opt.exp_name, str(epoch))
-            basis_saved = '../models/basis_{}_epoch_{}.pt'.format(opt.exp_name, str(epoch))
+            model_saved = 'checkpoints/model_{}_epoch_{}.pt'.format(opt.exp_name, str(epoch))
+            basis_saved = 'checkpoints/basis_{}_epoch_{}.pt'.format(opt.exp_name, str(epoch))
             torch.save(model.state_dict(), model_saved)
             torch.save(part_basis.state_dict(), basis_saved)
             
