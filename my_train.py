@@ -19,8 +19,8 @@ def get_feat_target(self, input, output):
     feat_target.append(output)
     # feat_norm = torch.norm(output, p=2, dim=1, keepdim=True)
     # feat_target.append(torch.div(output, feat_norm))
-    
-    
+
+
 
 if __name__ == "__main__":
 
@@ -52,6 +52,7 @@ if __name__ == "__main__":
 
     viz = Visualizer(opt.exp_name)
     device = torch.device("cuda:"+str(opt.gpu) if torch.cuda.is_available() else "cpu")
+    print('hi')
 
 
     # ================= Prepare training data ==================
@@ -72,7 +73,7 @@ if __name__ == "__main__":
         class_weights.append((1-pos) / pos)
     class_weights = torch.Tensor(class_weights).to(device)
 
-    
+
     # ===================== Base model =====================
     model = Res50_Deeplab(nc * k + 1).to(device)
     params = model.state_dict()
@@ -83,8 +84,8 @@ if __name__ == "__main__":
         if name in state_dict and param.size() == state_dict[name].size():
             params[name].copy_(state_dict[name])
     model.load_state_dict(params)
-    
-    
+
+
     # ==================== Part basis ======================
     part_basis = PartBasis(1024, nc * k).to(device)
 
@@ -96,7 +97,7 @@ if __name__ == "__main__":
     global feat_target
     vgg19.features[31].register_forward_hook(get_feat_target)
     vgg19.features[35].register_forward_hook(get_feat_target)
-    
+
 
     # ================= training settings ================
     optimizer = optim.SGD(model.parameters(), lr=1e-4, momentum=0.9, weight_decay=5e-4)
@@ -104,8 +105,8 @@ if __name__ == "__main__":
 
     exp_lr_scheduler = lr_scheduler.StepLR(optimizer, step_size=100, gamma=0.5)
     exp_lr_scheduler_b = lr_scheduler.StepLR(optimizer_b, step_size=100, gamma=0.5)
-    
-    
+
+
     # ==================== Start training ======================
     coord = np.tile(1. * np.arange(w) / (w-1), (h, 1))
     u = torch.from_numpy(coord).to(device).float()
@@ -139,7 +140,7 @@ if __name__ == "__main__":
                 inputs = inputs.to(device)
                 labels = labels.to(device)
                 saliency = saliency.to(device).float()
-                
+
                 nb = inputs.size(0)
                 label_mask = torch.zeros((nb, nc), dtype=torch.bool).to(device)
                 label_mask = label_mask.scatter_(1, labels.view(-1, 1), 1).repeat_interleave(k, dim=1)
@@ -150,14 +151,14 @@ if __name__ == "__main__":
 
                 # Forward
                 with torch.set_grad_enabled(phase == 'train'):
-                    
+
                     outputs = model(inputs)
                     outputs = nn.functional.interpolate(outputs, size=(h, w),
                                                         mode='bilinear', align_corners=True)
-                    
+
                     pams = nn.Softmax(dim=1)(outputs)[:, :-1, :, :]
                     pams_masked = pams.masked_select(label_mask.view(-1, nc*k, 1, 1)).view(-1, k, h, w)
-                    
+
 
                     # Classification loss
                     probs = nn.AdaptiveMaxPool2d(output_size=(1, 1))(pams).squeeze()
@@ -169,13 +170,13 @@ if __name__ == "__main__":
                     #select_mask = torch.zeros((inputs.size(0), n_classes), dtype=torch.uint8).to(device)
                     #select_mask = select_mask.scatter_(1, labels.view(-1, 1), 1).view(-1, n_classes, 1, 1, 1)
                     #pams_selected = torch.masked_select(pams, select_mask).view(-1, k, h, w)
-                    
+
                     #cams = torch.sum(outputs[:, :-1, :, :].view(-1, n_classes, k, h, w), 2)
                     #probs = nn.AdaptiveAvgPool2d(output_size=(1, 1))(cams).view(-1, n_classes)
                     #_, preds = torch.max(probs, 1)
                     #loss_cls = nn.CrossEntropyLoss(weight=class_weights)(probs, labels)
- 
-                    
+
+
                     # Semantic loss
                     basis = part_basis()
                     basis_masked = basis.view(1024, nc, k).index_select(1, labels)
@@ -207,7 +208,7 @@ if __name__ == "__main__":
                     dist = torch.sqrt((u - center_u)**2 + (v - center_v)**2)
                     loss_geo = torch.sum(pams_geo * dist)
 
-                        
+
                     # Equivariance loss
                     inputs = inputs.detach().cpu()
                     outputs = outputs.detach().cpu()
@@ -233,14 +234,14 @@ if __name__ == "__main__":
                     outputs_tf = nn.LogSoftmax(dim=1)(outputs_tf)
                     loss_eqv = nn.KLDivLoss()(outputs_tf, pams_tf)
 
- 
+
                     loss = opt.w_cls * loss_cls + \
                            opt.w_geo * loss_geo + \
                            opt.w_sem * loss_sem + \
                            opt.w_ort * loss_ort + \
                            opt.w_eqv * loss_eqv
 
-                    
+
                     # Visualization
                     with torch.no_grad():
                         if epoch % 5 == 0:
@@ -261,7 +262,7 @@ if __name__ == "__main__":
                         else:
                             viz.vis_losses(epoch, [loss, loss_cls, loss_geo, loss_sem, loss_ort, loss_eqv],
                                                   ['loss_val', 'loss_cls_val', 'loss_geo_val', 'loss_sem_val',
-                                                   'loss_ort_val', 'loss_eqv_val']) 
+                                                   'loss_ort_val', 'loss_eqv_val'])
 
                     # Backward + optimize only in training phase
                     if phase == 'train':
@@ -298,8 +299,5 @@ if __name__ == "__main__":
             basis_saved = 'checkpoints/basis_{}_epoch_{}.pt'.format(opt.exp_name, str(epoch))
             torch.save(model.state_dict(), model_saved)
             torch.save(part_basis.state_dict(), basis_saved)
-            
+
     print('Training complete.')
-
-
-
