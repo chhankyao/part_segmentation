@@ -33,13 +33,13 @@ def transforms_pam(inputs, flip, angle, translate, scale, shear):
     return inputs_tf
 
 
-def transform_img(inputs, device, flip, angle, translate, scale, shear):
+def transforms(inputs, device, flip, angle, translate, scale):
     nb, nc, h, w = [int(s) for s in inputs.size()]
     h2, w2 = int(round(h*scale)), int(round(w*scale))
     theta = torch.zeros(1, 2, 3)
     theta[:, :, :2] = torch.tensor([[np.cos(angle), -np.sin(angle)],
                                     [np.sin(angle), np.cos(angle)]])
-    theta[:, :, 2] = torch.tensor(translate).to(device)
+    theta[:, :, 2] = torch.tensor(translate)
     theta = theta.repeat(nb, 1, 1)
     grid = F.affine_grid(theta, (nb, nc, h2, w2), align_corners=True).to(device)
     inputs_tf = F.grid_sample(inputs, grid, padding_mode="border")

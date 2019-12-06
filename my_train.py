@@ -219,21 +219,21 @@ if __name__ == "__main__":
                     translate = (np.random.random(2)*0.2).tolist()
                     scale = np.random.random()*0.5+1
                     shear = np.random.randn()*5
-                    params_tf = [device, flip, angle, translate, scale, shear]
+                    params_tf = [device, flip, angle, translate, scale]
 
-                    inputs_tf = transform_img(inputs, *params_tf)
-                    feat_tf = transform_img(outputs, *params_tf)
+                    inputs_tf = transforms(inputs, *params_tf)
+                    pams_tf = transforms(pams, *params_tf)
 
                     #for i in range(nb):
                     #    inputs_tf[i, :, :, :] = transforms_img(inputs[i, :, :, :], *params_tf)
                     #    for j in range(outputs.size(1)):
                     #        feat_tf[i, j, :, :] = transforms_pam(outputs[i, j, :, :], *params_tf)
-                    pams_tf = nn.Softmax(dim=1)(feat_tf.to(device))
+                    #pams_tf = nn.Softmax(dim=1)(feat_tf.to(device))
 
                     outputs_tf = model(inputs_tf.to(device))
                     outputs_tf = nn.functional.interpolate(outputs_tf, size=(h, w),
                                                            mode='bilinear', align_corners=True)
-                    outputs_tf = nn.LogSoftmax(dim=1)(outputs_tf)
+                    outputs_tf = nn.LogSoftmax(dim=1)(outputs_tf)[:, :-1, :, :]
                     loss_eqv = nn.KLDivLoss()(outputs_tf, pams_tf)
 
 
