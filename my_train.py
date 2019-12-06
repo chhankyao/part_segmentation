@@ -219,7 +219,7 @@ if __name__ == "__main__":
                     translate = (np.random.random(2)*0.2).tolist()
                     scale = np.random.random()*0.5+1
                     shear = np.random.randn()*5
-                    params_tf = [flip, angle, translate, scale, shear]
+                    params_tf = [device, flip, angle, translate, scale, shear]
 
                     inputs_tf = transform_img(inputs, *params_tf)
                     feat_tf = transform_img(outputs, *params_tf)
