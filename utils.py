@@ -45,7 +45,7 @@ def transform_img(inputs, device, flip, angle, translate, scale, shear):
     inputs_tf = F.grid_sample(inputs, grid, padding_mode="border")
     x1 = int(round((w2 - w) / 2.))
     y1 = int(round((h2 - h) / 2.))
-    input_tf = inputs_tf[:, :, y1:y1+h, x1:x1+w]
+    inputs_tf = inputs_tf[:, :, y1:y1+h, x1:x1+w]
     if flip:
         inputs_tf = inputs_tf.flip([3])
     return inputs_tf
