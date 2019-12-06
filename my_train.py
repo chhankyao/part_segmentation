@@ -209,10 +209,10 @@ if __name__ == "__main__":
 
 
                     # Equivariance loss
-                    inputs = inputs.detach().cpu()
-                    outputs = outputs.detach().cpu()
-                    inputs_tf = torch.zeros(inputs.size())
-                    feat_tf = torch.zeros(outputs.size())
+                    inputs = inputs.detach()#.cpu()
+                    outputs = outputs.detach()#.cpu()
+                    #inputs_tf = torch.zeros(inputs.size())
+                    #feat_tf = torch.zeros(outputs.size())
 
                     flip = np.random.randint(2)
                     angle = np.random.randn()*10
@@ -221,10 +221,13 @@ if __name__ == "__main__":
                     shear = np.random.randn()*5
                     params_tf = [flip, angle, translate, scale, shear]
 
-                    for i in range(nb):
-                        inputs_tf[i, :, :, :] = transforms_img(inputs[i, :, :, :], *params_tf)
-                        for j in range(outputs.size(1)):
-                            feat_tf[i, j, :, :] = transforms_pam(outputs[i, j, :, :], *params_tf)
+                    inputs_tf = transform_img(inputs, *params_tf)
+                    feat_tf = transform_img(outputs, *params_tf)
+
+                    #for i in range(nb):
+                    #    inputs_tf[i, :, :, :] = transforms_img(inputs[i, :, :, :], *params_tf)
+                    #    for j in range(outputs.size(1)):
+                    #        feat_tf[i, j, :, :] = transforms_pam(outputs[i, j, :, :], *params_tf)
                     pams_tf = nn.Softmax(dim=1)(feat_tf.to(device))
 
                     outputs_tf = model(inputs_tf.to(device))
