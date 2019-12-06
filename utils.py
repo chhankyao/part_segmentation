@@ -33,7 +33,7 @@ def transforms_pam(inputs, flip, angle, translate, scale, shear):
     return inputs_tf
 
 
-def transforms(inputs, device, flip, angle, translate, scale):
+def spatial_transforms(inputs, device, flip, angle, translate, scale):
     nb, nc, h, w = [int(s) for s in inputs.size()]
     h2, w2 = int(round(h*scale)), int(round(w*scale))
     theta = torch.zeros(1, 2, 3)

@@ -221,8 +221,8 @@ if __name__ == "__main__":
                     shear = np.random.randn()*5
                     params_tf = [device, flip, angle, translate, scale]
 
-                    inputs_tf = transforms(inputs, *params_tf)
-                    pams_tf = transforms(pams, *params_tf)
+                    inputs_tf = spatial_transforms(inputs, *params_tf)
+                    pams_tf = spatial_transforms(pams, *params_tf)
 
                     #for i in range(nb):
                     #    inputs_tf[i, :, :, :] = transforms_img(inputs[i, :, :, :], *params_tf)
