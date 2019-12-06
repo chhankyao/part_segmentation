@@ -224,6 +224,7 @@ if __name__ == "__main__":
                     inputs_tf = transform_img(inputs, *params_tf)
                     feat_tf = transform_img(outputs, *params_tf)
 
+                    print(outputs.size(), feat_tf.size())
                     #for i in range(nb):
                     #    inputs_tf[i, :, :, :] = transforms_img(inputs[i, :, :, :], *params_tf)
                     #    for j in range(outputs.size(1)):
