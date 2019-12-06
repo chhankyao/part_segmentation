@@ -41,7 +41,7 @@ def transform_img(inputs, device, flip, angle, translate, scale, shear):
                                     [np.sin(angle), np.cos(angle)]])
     theta[:, :, 2] = torch.tensor(translate).to(device)
     theta = theta.repeat(nb, 1, 1)
-    grid = F.affine_grid(theta, (nb, nc, h2, w2), align_corners=True)
+    grid = F.affine_grid(theta, (nb, nc, h2, w2), align_corners=True).to(device)
     inputs_tf = F.grid_sample(inputs, grid, padding_mode="border")
     x1 = int(round((w2 - w) / 2.))
     y1 = int(round((h2 - h) / 2.))
