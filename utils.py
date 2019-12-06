@@ -39,10 +39,9 @@ def transform_img(inputs, flip, angle, translate, scale, shear):
                                     [np.sin(angle), np.cos(angle)]])
     theta[:, :, 2] = torch.tensor(translate)
 
-    nb, nc, h, w = [int(s) for s in inputs.size()]
+    h, w = int(inputs.size(2)), int(inputs.size(3))
     h2, w2 = int(round(h*scale)), int(round(w*scale))
-    size_o = torch.tensor([nb, nc, h2, w2])
-    grid = F.affine_grid(theta, size_o, align_corners=True)
+    grid = F.affine_grid(theta, (h2, w2), align_corners=True)
     inputs_tf = F.grid_sample(inputs, grid, padding_mode="border")
 
     x1 = int(round((w2 - w) / 2.))
