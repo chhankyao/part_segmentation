@@ -248,7 +248,7 @@ if __name__ == "__main__":
                     with torch.no_grad():
                         if epoch % 5 == 0:
                             pams_viz = pams.view(-1, nc * k, h, w)
-                            pams_tf_viz = pams_tf[:, :-1, :, :].view(-1, nc * k, h, w)
+                            pams_tf_viz = pams_tf.view(-1, nc * k, h, w)
                             pams_viz = pams_viz / pams_viz.max(2, keepdim=True)[0].max(3, keepdim=True)[0]
                             pams_tf_viz = pams_tf_viz / pams_tf_viz.max(2, keepdim=True)[0].max(3, keepdim=True)[0]
                             viz.vis_inputs(epoch, inputs, prefix='')
