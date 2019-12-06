@@ -251,8 +251,8 @@ if __name__ == "__main__":
                             pams_tf_viz = pams_tf[:, :-1, :, :].view(-1, nc * k, h, w)
                             pams_viz = pams_viz / pams_viz.max(2, keepdim=True)[0].max(3, keepdim=True)[0]
                             pams_tf_viz = pams_tf_viz / pams_tf_viz.max(2, keepdim=True)[0].max(3, keepdim=True)[0]
-                            viz.vis_inputs(epoch, inputs, prefix='inputs')
-                            viz.vis_inputs(epoch, inputs_tf, prefix='inputs_tf')
+                            viz.vis_inputs(epoch, inputs, prefix='')
+                            viz.vis_inputs(epoch, inputs_tf, prefix='_tf')
                             viz.vis_inputs(epoch, saliency, prefix='saliency')
                             viz.vis_DFF_heatmaps(epoch, pams_viz, threshold=0.1, prefix='pams')
                             viz.vis_DFF_heatmaps(epoch, pams_tf_viz, threshold=0.1, prefix='pams_tf')

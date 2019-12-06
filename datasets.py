@@ -37,16 +37,16 @@ class VOCDataset(data.Dataset):
 
         self.size = []
         self.img_list = []
-        # if phase == 'train':
-        #    list_file = DATA_DIR+'ImageSets/Main/{}_{}_large.txt'
-        # else:
-        list_file = data_dir + 'ImageSets/Main/{}_{}.txt'
+        if phase == 'train':
+            list_file = data_dir + 'ImageSets/Main/{}_{}_large.txt'
+        else:
+            list_file = data_dir + 'ImageSets/Main/{}_{}.txt'
         for cls_idx, cls in enumerate(class_names):
             with open(list_file.format(cls, phase), 'r') as f:
-                # if phase == 'train':
-                #    img_ids = [(s, cls_idx) for s in f.read().splitlines()]
-                # else:
-                img_ids = [(s.split(' ')[0], cls_idx) for s in f.read().splitlines() if s[-2:] == ' 1']
+                if phase == 'train':
+                    img_ids = [(s, cls_idx) for s in f.read().splitlines()]
+                else:
+                    img_ids = [(s.split(' ')[0], cls_idx) for s in f.read().splitlines() if s[-2:] == ' 1']
                 self.size.append(len(img_ids))
                 self.img_list += img_ids
 
@@ -66,5 +66,5 @@ class VOCDataset(data.Dataset):
 
         img = preprocess_img(img, self.img_size, self.phase, flip, angle, translate, scale, shear)
         sal = preprocess_sal(sal, self.feat_size, self.phase, flip, angle, translate, scale, shear)
-        
+
         return img, sal, label
