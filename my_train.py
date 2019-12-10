@@ -195,7 +195,7 @@ if __name__ == "__main__":
 
                     # Orthonormal loss
                     wn = torch.norm(basis_masked, p=2, dim=1, keepdim=True)
-                    ww = basis_masked.div(wn + 1e-9).view(-1, k)
+                    ww = basis_masked.div(wn.expand_as(ww) + 1e-9).view(-1, k)
                     wwt = torch.matmul(ww.transpose(0, 1), ww)
                     loss_ort = nn.MSELoss()(wwt, torch.eye(k).to(device))
 
