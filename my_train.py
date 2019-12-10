@@ -178,17 +178,18 @@ if __name__ == "__main__":
 
                     # Semantic loss
                     basis = part_basis()
-                    basis_masked = basis.view(1024, nc, k).index_select(1, labels)
+                    basis_masked = basis.view(1024, nc, k).index_select(1, labels).transpose(0, 1)
 
                     feat_target = []
                     _ = vgg19(inputs)
                     feat_t = nn.functional.interpolate(torch.cat(feat_target, dim=1), size=(h, w),
                                                        mode='bilinear', align_corners=True)
 
-                    feat_r = torch.zeros(feat_t.size()).to(device)
-                    for i in range(nb):
-                        feat_r[i, :, :, :] = torch.mm(basis_masked[:, i, :],
-                                                      pams_masked[i, :, :, :].view(k, -1)).view(-1, h, w)
+                    feat_r = torch.bmm(basis_masked, pams_masked.view(-1, k, h*w)).view(-1, 1024, h, w)
+                    #feat_r = torch.zeros(feat_t.size()).to(device)
+                    #for i in range(nb):
+                    #    feat_r[i, :, :, :] = torch.mm(basis_masked[:, i, :],
+                    #                                  pams_masked[i, :, :, :].view(k, -1)).view(-1, h, w)
                     loss_sem = nn.MSELoss()(feat_r, feat_t * saliency)
 
 
