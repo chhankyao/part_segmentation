@@ -38,7 +38,7 @@ class VOCDataset(data.Dataset):
         self.size = []
         self.img_list = []
         if phase == 'train':
-            list_file = data_dir + 'ImageSets/Main/{}_{}_large.txt'
+            list_file = data_dir + 'ImageSets/Main/{}_{}_small.txt'
         else:
             list_file = data_dir + 'ImageSets/Main/{}_{}.txt'
         for cls_idx, cls in enumerate(class_names):
